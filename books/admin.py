@@ -43,6 +43,7 @@ class BookAdmin(admin.ModelAdmin):
         'author__name',
         'genres__name'
     )
+
     def get_author_name(self, obj):
         """ Returns an author name """
         return obj.author.name if obj.author.name else 'No author'

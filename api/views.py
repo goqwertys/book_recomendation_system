@@ -26,6 +26,6 @@ class InteractionViewSet(viewsets.ModelViewSet):
     serializer_class = InteractionSerializer
 
 
-class UserViewSet(viewsets.ModelViewSet):
+class UserViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer

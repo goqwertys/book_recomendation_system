@@ -2,6 +2,7 @@ from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
+import books.models
 
 NULLABLE = {
     'blank': True,
@@ -44,6 +45,11 @@ class User(AbstractUser):
         blank=True,
         null=True,
         help_text='Upload your avatar'
+    )
+    preferred_genres = models.ManyToManyField(
+        books.models.Genre,
+        verbose_name='Preferred Genres',
+        **NULLABLE
     )
 
     USERNAME_FIELD = 'email'

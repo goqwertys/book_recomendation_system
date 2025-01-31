@@ -49,7 +49,7 @@ class User(AbstractUser):
     preferred_genres = models.ManyToManyField(
         books.models.Genre,
         verbose_name='Preferred Genres',
-        **NULLABLE
+        blank=True
     )
 
     USERNAME_FIELD = 'email'

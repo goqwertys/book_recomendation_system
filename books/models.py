@@ -38,10 +38,11 @@ class Book(models.Model):
     author = models.ForeignKey('Author', on_delete=models.CASCADE)
     description = models.TextField(**NULLABLE)
     cover = models.ImageField(
-        upload_to='books/'
+        upload_to='books/',
+        **NULLABLE
     )
     genres = models.ManyToManyField('Genre')
-    publish_data = models.DateField()
+    publish_date = models.DateField()
 
     class Meta:
         verbose_name = 'Book'

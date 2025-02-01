@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ profile_user.email }}</title>
+</head>
+<body>
+    <h1>{{ profile_user.email }}</h1>
+    {% if profile_user.avatar %}
+        <img src="{{ profile_user.avatar.url }}" width="200">
+    {% endif %}
+    <h2>Preferred genres:</h2>
+    <ul>
+    {% for genre in profile_user.preferred_genres.all %}
+        <li>{{ genre.name }}</li>
+    {% endfor %}
+    </ul>
+
+    <h2>Book Ratings:</h2>
+    <ul>
+    {% for rating in ratings %}
+        <li>{{ rating.book.title }} - {{ rating.rating }}/5</li>
+    {% endfor %}
+    </ul>
+
+    {% if user == profile_user %}
+        <a href="{% url 'users:edit-profile' %}">Edit profile</a>
+    {% endif %}
+</body>
+</html>

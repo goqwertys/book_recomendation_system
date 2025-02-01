@@ -38,7 +38,6 @@ INSTALLED_APPS = [
     'books',
     'interactions',
     'api',
-    'recommendations'
 ]
 
 REST_FRAMEWORK = {

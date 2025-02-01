@@ -3,12 +3,13 @@ from rest_framework.permissions import AllowAny
 from rest_framework.routers import SimpleRouter
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
-from api.views import UserViewSet, BookViewSet, GenreViewSet, InteractionViewSet, UserRegisterView
+from api.views import UserViewSet, BookViewSet, GenreViewSet, InteractionViewSet, UserRegisterView, AuthorViewSet
 
 router = SimpleRouter()
 router.register('users', UserViewSet)
 router.register('books', BookViewSet)
 router.register('genres', GenreViewSet)
+router.register('authors', AuthorViewSet)
 router.register('interactions', InteractionViewSet)
 
 urlpatterns = [

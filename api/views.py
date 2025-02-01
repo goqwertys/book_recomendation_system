@@ -2,6 +2,7 @@ from rest_framework import viewsets, generics, permissions, mixins
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
+from api.paginators import AuthorPaginator, GenrePaginator, BookPaginator, InteractionPaginator, UserPaginator
 from api.permissions import IsHimself
 from api.serializers import GenreSerializer, AuthorSerializer, BookSerializer, InteractionSerializer, UserSerializer, \
     UserRegistrationSerializer, UserUpdateSerializer
@@ -13,21 +14,25 @@ from users.models import User
 class AuthorViewSet(viewsets.ModelViewSet):
     queryset = Author.objects.all()
     serializer_class = AuthorSerializer
+    pagination_class = AuthorPaginator
 
 
 class GenreViewSet(viewsets.ModelViewSet):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
+    pagination_class = GenrePaginator
 
 
 class BookViewSet(viewsets.ModelViewSet):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
+    pagination_class = BookPaginator
 
 
 class InteractionViewSet(viewsets.ModelViewSet):
     queryset = Interaction.objects.all()
     serializer_class = InteractionSerializer
+    pagination_class = InteractionPaginator
 
 
 class UserViewSet(viewsets.GenericViewSet,
@@ -37,6 +42,7 @@ class UserViewSet(viewsets.GenericViewSet,
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [IsHimself]
+    pagination_class = UserPaginator
 
     def get_permissions(self):
         if self.action == 'list':

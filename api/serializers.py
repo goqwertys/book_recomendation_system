@@ -73,3 +73,13 @@ class UserUpdateSerializer(serializers.ModelSerializer):
         if User.objects.exclude(pk=user.pk).filter(email=value).exists():
             raise serializers.ValidationError('')
         return value
+
+
+class PageRankRecommendationSerializer(serializers.Serializer):
+    book = BookSerializer()
+    score = serializers.FloatField()
+
+
+class CollaborativeRecommendationSerializer(serializers.Serializer):
+    book = BookSerializer()
+    predicted_rating = serializers.FloatField()

@@ -1,10 +1,20 @@
-from books.models import Book
+from django.core.cache import cache
+
+from config.settings import CACHE_ENABLED
 from recommendations.algorithms import pagerank, collaborative, k_nearest_neighbors
 from recommendations.graph_builder import build_user_book_graph
 
 
 def get_pagerank_recommendations_service(user_id, top_n=10):
-    G = build_user_book_graph()
+    if not CACHE_ENABLED:
+        G = build_user_book_graph()
+    else:
+        key = 'user_book_graph'
+        G = cache.get(key)
+        if not G:
+            G = build_user_book_graph()
+            cache.set('user_book_graph', G, timeout=3600)
+
     return pagerank.get_pagerank_recommendations(user_id, G, top_n)
 
 

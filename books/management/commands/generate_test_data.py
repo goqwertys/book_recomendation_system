@@ -19,6 +19,7 @@ class Command(BaseCommand):
         User.objects.all().delete()
         Interaction.objects.all().delete()
 
+        self.stdout.write('Creating genres...')
         # genres creation
         genres = [
             'Speculative fiction', 'Detective', 'Novel', 'Science',
@@ -30,11 +31,13 @@ class Command(BaseCommand):
         genres = Genre.objects.all()
 
         # authors creation
+        self.stdout.write('Creating authors...')
         authors = [Author(name=f'Author {i}') for i in range(1, 21)]
         Author.objects.bulk_create(authors)
         authors = Author.objects.all()
 
         # books creation
+        self.stdout.write('Creating books...')
         books = []
         for i in range(1, 101):
             book = Book(
@@ -47,11 +50,13 @@ class Command(BaseCommand):
         Book.objects.bulk_create(books)
 
         # Adding Genres to Books
+        self.stdout.write('Adding Genres to Books...')
         all_books = Book.objects.all()
         for book in all_books:
             book.genres.add(*random.sample(list(genres), k=random.randint(1, 3)))
 
         # Creating Users
+        self.stdout.write('Creating Users...')
         for i in range(1, 51):
             user = User.objects.create_user(
                 email=f'user{i}@example.com',
@@ -60,6 +65,7 @@ class Command(BaseCommand):
             user.preferred_genres.add(*random.sample(list(genres), k=random.randint(2, 4)))
 
         # Creating interactions
+        self.stdout.write('Creating interactions...')
         interactions = []
         all_books = list(Book.objects.all())
         all_users = User.objects.all()
@@ -84,13 +90,11 @@ class Command(BaseCommand):
                     [None, round(random.uniform(3.0, 5.0), 1)],
                     weights=[0.3, 0.7]
                 )[0]
-                viewed = random.choices([True, False], weights=[0.0, 0.2])[0]
 
                 interactions.append(Interaction(
                     user=user,
                     book=book,
                     rating=rating,
-                    viewed=viewed
                 ))
 
         Interaction.objects.bulk_create(interactions)

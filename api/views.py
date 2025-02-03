@@ -1,13 +1,16 @@
 from rest_framework import viewsets, generics, permissions, mixins
-from rest_framework.decorators import action
+from rest_framework.decorators import action, api_view
 from rest_framework.response import Response
 
 from api.paginators import AuthorPaginator, GenrePaginator, BookPaginator, InteractionPaginator, UserPaginator
 from api.permissions import IsHimself
 from api.serializers import GenreSerializer, AuthorSerializer, BookSerializer, InteractionSerializer, UserSerializer, \
-    UserRegistrationSerializer, UserUpdateSerializer
+    UserRegistrationSerializer, UserUpdateSerializer, PageRankRecommendationSerializer, \
+    CollaborativeRecommendationSerializer
 from books.models import Author, Genre, Book
 from interactions.models import Interaction
+from recommendations.services import get_pagerank_recommendations_service, get_collaborative_recommendations_service, \
+    get_knn_recommendations_service
 from users.models import User
 
 
@@ -70,3 +73,25 @@ class UserViewSet(viewsets.GenericViewSet,
 class UserRegisterView(generics.CreateAPIView):
     serializer_class = UserRegistrationSerializer
     permission_classes = [permissions.AllowAny]
+
+
+
+@api_view(['GET'])
+def get_pagerank_recommendations(request, user_id):
+    data = get_pagerank_recommendations_service(user_id)
+    serializer = PageRankRecommendationSerializer(data, many=True)
+    return Response(serializer.data)
+
+
+@api_view(['GET'])
+def get_collaborative_recommendations(request, user_id):
+    data = get_collaborative_recommendations_service(user_id)
+    serializer = CollaborativeRecommendationSerializer(data, many=True)
+    return Response(serializer.data)
+
+
+@api_view(['GET'])
+def get_knn_recommendations(request, user_id):
+    nearest_neighbors = get_knn_recommendations_service(user_id)
+    serializer = UserSerializer(nearest_neighbors, many=True)
+    return Response(serializer.data)

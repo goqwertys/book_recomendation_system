@@ -9,3 +9,6 @@ djangorestframework_simplejwt==5.4.0
 networkx==3.4.2
 matplotlib==3.10.0
 pyvis==0.3.2
+numpy==2.2.2
+scipy==1.15.1
+scikit-learn==1.6.1

@@ -4,7 +4,7 @@ from interactions.models import Interaction
 
 
 def user_based_collaborative_filtering(user_id, k=5, top_n=10):
-    # We receive all interactions
+    # Receive all interactions
     interactions = Interaction.objects.all()
 
     # Building a user-book matrix
@@ -36,7 +36,7 @@ def user_based_collaborative_filtering(user_id, k=5, top_n=10):
     # Predicting ratings
     predicted_ratings = np.zeros(len(books))
     for book_idx in range(len(books)):
-        if user_book_matrix[target_user_idx, book_idx] == 0:  # Книга не оценена
+        if user_book_matrix[target_user_idx, book_idx] == 0:  # Book not rated
             numerator = 0
             denominator = 0
             for user_idx in similar_users:
@@ -48,4 +48,4 @@ def user_based_collaborative_filtering(user_id, k=5, top_n=10):
 
     # Recommending books with the highest predicted ratings
     recommended_books = np.argsort(predicted_ratings)[-top_n:][::-1]
-    return [(list(books)[book_idx], predicted_ratings[book_idx]) for book_idx in recommended_books]
+    return [{"book": book, "predicted_rating": predicted_ratings[books.index(book.id)]} for book in books]

@@ -5,7 +5,7 @@ from interactions.models import Interaction
 
 @admin.register(Interaction)
 class InteractionAdmin(admin.ModelAdmin):
-    list_display = ('user', 'book', 'rating', 'viewed', 'timestamp')
-    list_filter = ('viewed', 'rating')
+    list_display = ('user', 'book', 'rating', 'timestamp')
+    list_filter = ('rating', )
     search_fields = ('user__username', 'book__title')
     ordering = ('-timestamp',)

@@ -1,3 +1,4 @@
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 
 
@@ -43,6 +44,10 @@ class Book(models.Model):
     )
     genres = models.ManyToManyField('Genre')
     publish_date = models.DateField()
+    average_rating = models.FloatField(
+        default=0.0,
+        validators=[MinValueValidator(0.0), MaxValueValidator(5.0)]
+    )
 
     class Meta:
         verbose_name = 'Book'

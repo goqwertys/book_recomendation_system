@@ -130,3 +130,5 @@ CACHES = {
         'LOCATION': os.getenv('LOCATION'),
     }
 }
+
+CACHE_ENABLED = True

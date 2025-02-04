@@ -39,9 +39,12 @@ class UserSerializer(serializers.ModelSerializer):
 
 class InteractionSerializer(serializers.ModelSerializer):
     """ Interaction Serializer """
+    user = serializers.PrimaryKeyRelatedField(read_only=True)
+
     class Meta:
         model = Interaction
-        fields = '__all__'
+        fields = ['id', 'rating', 'book', 'user', 'timestamp']
+        read_only_fields = ['user', 'timestamp']
 
 
 class UserRegistrationSerializer(serializers.ModelSerializer):

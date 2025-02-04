@@ -1,0 +1,14 @@
+{% extends 'books/base.html' %}
+{% block title %}Author Form{% endblock %}
+{% block content %}
+<div class="container">
+    <h1 class="mt-5">Author:</h1>
+    <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary mt-3">Submit</button>
+        <a href="{% url 'books:authors' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}

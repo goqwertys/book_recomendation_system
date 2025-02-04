@@ -1,0 +1,40 @@
+{% extends 'books/base.html' %}
+{% block title %}Genre list{% endblock %}
+{% block content %}
+<div class="album py-5 bg-body-tertiary">
+    <div class="container">
+        <h3>Genres</h3>
+        <div class="col-12 d-flex justify-content-between align-items-center mt-3 mb-3">
+            <a class="btn btn-secondary" href="{% url 'books:home' %}">
+                Home
+            </a>
+            {% if user.is_staff %}
+            <a class="btn btn-primary" href="{% url 'books:genre-create' %}" role="button">
+                Add New
+            </a>
+            {% endif %}
+        </div>
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>
+                            Name
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for genre in genres %}
+                    <tr>
+                        <td>
+                            <a href="{% url 'books:genre-detail' genre.pk %}">{{ genre.name }}</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% include 'books/includes/pagination.html' %}
+    </div>
+</div>
+{% endblock %}

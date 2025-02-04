@@ -4,7 +4,7 @@ from rest_framework.routers import SimpleRouter
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 from api.views import UserViewSet, BookViewSet, GenreViewSet, InteractionViewSet, UserRegisterView, AuthorViewSet, \
-    get_collaborative_recommendations, get_pagerank_recommendations, get_knn_recommendations
+    get_collaborative_recommendations, get_pagerank_recommendations, get_knn_recommendations, get_statistics
 
 router = SimpleRouter()
 router.register('users', UserViewSet)
@@ -25,5 +25,8 @@ urlpatterns = [
     # Recommendations
     path('recommendations/pagerank/<int:user_id>/', get_pagerank_recommendations, name='get-pr-recommendations'),
     path('recommendations/collaborative/<int:user_id>/', get_collaborative_recommendations, name='get-recommendations'),
-    path('recommendations/knn/<int:user_id>/', get_knn_recommendations, name='get-knn-recommendations')
+    path('recommendations/knn/<int:user_id>/', get_knn_recommendations, name='get-knn-recommendations'),
+
+    # Statistics
+    path('statistics/', get_statistics, name='statistics')
 ]

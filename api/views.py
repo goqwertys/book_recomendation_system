@@ -60,6 +60,17 @@ class InteractionViewSet(viewsets.ModelViewSet):
     pagination_class = InteractionPaginator
     permission_classes = [IsOwnerOrStaff]
 
+    def get_queryset(self):
+        """
+        Limit requests:
+        - Users can only see their own interactions.
+        - Moderators can see all interactions.
+        """
+        user = self.request.user
+        if user.is_staff:
+            return Interaction.objects.all()
+        return Interaction.objects.filter(user=user)
+
     def perform_create(self, serializer):
         """
         Automatically adds the current user to the `user` field.

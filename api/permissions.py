@@ -22,12 +22,19 @@ class IsStaffOrReadOnly(permissions.BasePermission):
 
 class IsOwnerOrStaff(permissions.BasePermission):
     """
-    Allows editing of the object only by its owner.
-    The owner, moderators, or is_staff can view it.
+    Allows access:
+    - For users with `is_staff` - all interactions.
+    - For interaction owners (users) - only their own interactions.
     """
+    def has_permission(self, request, view):
+        if request.method == 'GET':
+            return request.user.is_authenticated
+        return True
+
     def has_object_permission(self, request, view, obj):
         if request.method in permissions.SAFE_METHODS:
             return obj.user == request.user or request.user.is_staff
+
         return obj.user == request.user
 
 

@@ -22,6 +22,9 @@ urlpatterns = [
     path('login/refresh/', TokenRefreshView.as_view(permission_classes=(AllowAny,)), name='refresh'),
     path('users/me/', UserViewSet.as_view({'get': 'me', 'put': 'me', 'patch': 'me'}), name='user-me'),
 
+    # User management
+    path('users/<int:pk>/block/', UserViewSet.as_view({'post': 'block'}), name='user-block'),
+
     # Recommendations
     path('recommendations/pagerank/<int:user_id>/', get_pagerank_recommendations, name='get-pr-recommendations'),
     path('recommendations/collaborative/<int:user_id>/', get_collaborative_recommendations, name='get-recommendations'),

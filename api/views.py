@@ -9,7 +9,7 @@ from rest_framework.response import Response
 
 from api.filters import AuthorFilter, GenreFilter, BookFilter
 from api.paginators import AuthorPaginator, GenrePaginator, BookPaginator, InteractionPaginator, UserPaginator
-from api.permissions import IsHimself, IsStaffOrReadOnly, IsOwnerOrStaff
+from api.permissions import IsHimself, IsStaffOrReadOnly, IsOwnerOrStaff, IsAdminUser
 from api.serializers import GenreSerializer, AuthorSerializer, BookSerializer, InteractionSerializer, UserSerializer, \
     UserRegistrationSerializer, UserUpdateSerializer, PageRankRecommendationSerializer, \
     CollaborativeRecommendationSerializer
@@ -97,6 +97,27 @@ class UserViewSet(viewsets.GenericViewSet,
 
         serializer = self.get_serializer(user)
         return Response(serializer.data)
+
+    @action(detail=True, methods=['POST'], permission_classes=[IsAdminUser])
+    def block(self, request, pk=None):
+        """
+        Blocks/ Unblocks the user, switching `is_active`.
+        Only available to moderators (`is_staff`).
+        """
+        try:
+            user = self.get_object()
+
+            if user == request.user:
+                return Response({'detail': 'You cannot block yourself.'}, status=403)
+
+            user.is_active = not user.is_active
+            user.save()
+
+            status = "Blocked" if not user.is_active else "Unblocked"
+            return Response({'detail': f'User {user.pk} is now {status}.'})
+
+        except User.DoesNotExist:
+            return Response({'detail': 'User not found.'}, status=404)
 
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter, filters.SearchFilter]
     filterset_fields = ['email']

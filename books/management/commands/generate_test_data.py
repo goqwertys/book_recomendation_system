@@ -1,6 +1,7 @@
 import random
 
 from django.core.management import BaseCommand
+from django.db.models import Avg
 from django.utils import timezone
 
 from books.models import Genre, Author, Book
@@ -98,6 +99,15 @@ class Command(BaseCommand):
                 ))
 
         Interaction.objects.bulk_create(interactions)
+
+        # Updating average ratings
+        self.stdout.write('Updating average ratings...')
+        books_to_update = Book.objects.filter(interaction__isnull=False).distinct()
+        for book in books_to_update:
+            book.average_rating = Interaction.objects.filter(book=book).aggregate(
+                Avg('rating')
+            )['rating__avg'] or 0.0
+            book.save()
 
         self.stdout.write(self.style.SUCCESS(
             f'Successfully created:\n'

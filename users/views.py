@@ -1,7 +1,8 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.views import LogoutView as DjangoLogoutView
-from django.urls import reverse_lazy
+from django.shortcuts import redirect
+from django.urls import reverse_lazy, reverse
 from django.views.generic import CreateView, FormView, UpdateView, DetailView
 
 from interactions.models import Interaction
@@ -58,6 +59,10 @@ class ProfileView(DetailView):
         return context
 
 
+def my_profile_redirect(request):
+    return redirect(reverse('users:profile', kwargs={'pk': request.user.pk}))
+
+
 class ProfileUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = User
     form_class = UserUpdateForm
@@ -74,3 +79,4 @@ class ProfileUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
     def form_valid(self, form):
         messages.success(self.request, 'Profile updated successfully!')
+        return super().form_valid(form)

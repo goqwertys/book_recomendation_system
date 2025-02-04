@@ -1,14 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Edit profile: {{ profile_user.email }}</title>
-</head>
-<body>
-  <form method="post" enctype="multipart/form-data">
-      {% csrf_token %}
-      {{ form.as_p }}
-      <button type="submit">Сохранить</button>
-  </form>
-</body>
-</html>
+{% extends 'books/base.html' %}
+{% block title %}{{ profile_user.email }}{% endblock %}
+{% block content %}
+<div class="container">
+    <h1 class="mt-5 mb-5">Edit profile</h1>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary mt-3">Save</button>
+    </form>
+</div>
+{% endblock %}

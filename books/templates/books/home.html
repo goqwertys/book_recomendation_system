@@ -1,0 +1,37 @@
+{% extends 'books/base.html' %}
+{% block title %}Home{% endblock %}
+{% block content %}
+<div class="container">
+    <h1 class="mt-5 text-center">Book recommendations service</h1>
+    <div class="row d-flex justify-content-center align-items-center mt-3 mb-3">
+        <div class="col-4 text-center">
+            {% if user.is_authenticated %}
+            <!--
+                Menu with pages
+            -->
+            {% else %}
+            <!--
+                Login and sign up
+            -->
+            {% endif %}
+            {% if user.is_staff %}
+            <!--
+                User management pages
+            -->
+            {% endif %}
+        </div>
+    </div>
+        <div class="col-4">
+            <div class="card width: 18rem;">
+                <div class="card-header">
+                Statistics
+            </div>
+                <ul>
+                    <!--
+                    Stats
+                    -->
+                </ul>
+            </div>
+        </div>
+</div>
+{% endblock %}

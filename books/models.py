@@ -43,7 +43,7 @@ class Book(models.Model):
         **NULLABLE
     )
     genres = models.ManyToManyField('Genre')
-    publish_date = models.DateField()
+    publish_date = models.DateField(auto_now_add=True)
     average_rating = models.FloatField(
         default=0.0,
         validators=[MinValueValidator(0.0), MaxValueValidator(5.0)]

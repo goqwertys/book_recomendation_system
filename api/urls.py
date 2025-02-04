@@ -25,7 +25,12 @@ urlpatterns = [
     # User management
     path('users/<int:pk>/block/', UserViewSet.as_view({'post': 'block'}), name='user-block'),
 
-    # Recommendations
+    # Recommendations for the current user
+    path('users/me/pagerank/', get_pagerank_recommendations, name='get-my-pr-recommendations'),
+    path('users/me/collaborative/', get_collaborative_recommendations, name='get-my-collaborative-recommendations'),
+    path('users/me/knn/', get_knn_recommendations, name='get-my-knn-recommendations'),
+
+    # Recommendations for other users (only for moderators or admins)
     path('recommendations/pagerank/<int:user_id>/', get_pagerank_recommendations, name='get-pr-recommendations'),
     path('recommendations/collaborative/<int:user_id>/', get_collaborative_recommendations, name='get-recommendations'),
     path('recommendations/knn/<int:user_id>/', get_knn_recommendations, name='get-knn-recommendations'),

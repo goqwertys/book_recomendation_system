@@ -146,8 +146,20 @@ class UserRegisterView(generics.CreateAPIView):
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def get_pagerank_recommendations(request, user_id):
-    data = get_pagerank_recommendations_service(user_id)
+def get_pagerank_recommendations(request, user_id=None):
+    if user_id is None:
+        user = request.user
+    else:
+        if not request.user.is_staff:
+            return Response(
+                {
+                    'detail':'You do not have permission to view recommendations for other users.'
+                },
+                status=403
+            )
+        user = User.objects.get(id=user_id)
+
+    data = get_pagerank_recommendations_service(user.id)
     serializer = PageRankRecommendationSerializer(data, many=True)
     return Response(serializer.data)
 
@@ -155,7 +167,19 @@ def get_pagerank_recommendations(request, user_id):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_collaborative_recommendations(request, user_id):
-    data = get_collaborative_recommendations_service(user_id)
+    if user_id is None:
+        user = request.user
+    else:
+        if not request.user.is_staff:
+            return Response(
+                {
+                    'detail': 'You do not have permission to view recommendations for other users.'
+                },
+                status=403
+            )
+        user = User.objects.get(id=user_id)
+
+    data = get_collaborative_recommendations_service(user.id)
     serializer = CollaborativeRecommendationSerializer(data, many=True)
     return Response(serializer.data)
 
@@ -163,7 +187,19 @@ def get_collaborative_recommendations(request, user_id):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_knn_recommendations(request, user_id):
-    nearest_neighbors = get_knn_recommendations_service(user_id)
+    if user_id is None:
+        user = request.user
+    else:
+        if not request.user.is_staff:
+            return Response(
+                {
+                    'detail': 'You do not have permission to view recommendations for other users.'
+                },
+                status=403
+            )
+        user = User.objects.get(id=user_id)
+
+    nearest_neighbors = get_knn_recommendations_service(user.id)
     serializer = UserSerializer(nearest_neighbors, many=True)
     return Response(serializer.data)
 

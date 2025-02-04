@@ -21,10 +21,14 @@
                 <ul class="list-unstyled">
                     <li><a href="{% url 'books:home' %}" class="btn">Home</a></li>
                     {% if user.is_authenticated %}
-                    <li><a href="{% url 'users:my-profile' %}" class="btn"> Profile </a></li>
-                    <li><a href="{% url 'users:edit-profile' %}" class="btn">Edit Profile</a></li>
                     <li>
-                        <form method="post" action="#">
+                        <a href="{% url 'users:my-profile' %}" class="btn"> Profile </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'users:edit-profile' %}" class="btn">Edit Profile</a>
+                    </li>
+                    <li>
+                        <form method="post" action="{% url 'users:logout' %}">
                             {% csrf_token %}
                             <button type="submit" class="btn">Logout</button>
                         </form>

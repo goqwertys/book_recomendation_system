@@ -28,7 +28,7 @@ class LoginView(FormView):
     template_name = 'users/login.html'
 
     def get_success_url(self):
-        return reverse_lazy('users:profile', kwargs={'pk': self.request.user.pk})
+        return reverse_lazy('books:home', kwargs={'pk': self.request.user.pk})
 
     def form_valid(self, form):
         from django.contrib.auth import login

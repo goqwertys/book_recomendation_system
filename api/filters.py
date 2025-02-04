@@ -52,4 +52,3 @@ class UserFilter(filters.FilterSet):
     class Meta:
         model = User
         fields = ['email', 'preferred_genres']
-

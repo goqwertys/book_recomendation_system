@@ -9,9 +9,23 @@ class IsHimself(permissions.BasePermission):
         return obj == request.user
 
 
-class IsHimselfOrReadOnly(permissions.BasePermission):
-    """ Checks if user is the owner of  """
-    def has_object_permission(self, request, view, obj):
+class IsStaffOrReadOnly(permissions.BasePermission):
+    """
+    Allows unsafe methods (POST, PUT, PATCH, DELETE) only for staff users.
+    Others can only read (GET).
+    """
+    def has_permission(self, request, view):
         if request.method in permissions.SAFE_METHODS:
             return True
-        return obj == request.user
+        return request.user and request.user.is_staff
+
+
+class IsOwnerOrStaff(permissions.BasePermission):
+    """
+    Allows editing of the object only by its owner.
+    The owner, moderators, or is_staff can view it.
+    """
+    def has_object_permission(self, request, view, obj):
+        if request.method in permissions.SAFE_METHODS:
+            return obj.user == request.user or request.user.is_staff
+        return obj.user == request.user

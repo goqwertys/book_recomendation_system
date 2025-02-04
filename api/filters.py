@@ -28,11 +28,13 @@ class BookFilter(filters.FilterSet):
         field_name='author__name',
         lookup_expr='icontains'
     )
+    author_id = filters.NumberFilter(field_name='author__id')
     genres = filters.ModelChoiceFilter(
         field_name='genres__name',
         queryset=Genre.objects.all(),
         lookup_expr='icontains'
     )
+    genre_id = filters.NumberFilter(field_name='genres__id')
 
     class Meta:
         model = Book

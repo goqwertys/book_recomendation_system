@@ -27,14 +27,13 @@ class BookSerializer(serializers.ModelSerializer):
 
 class UserSerializer(serializers.ModelSerializer):
     """ User serializer """
-    preferred_genres = GenreSerializer(many=True, read_only=True)
+    preferred_genres = serializers.PrimaryKeyRelatedField(
+        many=True, queryset=Genre.objects.all()
+    )
 
     class Meta:
         model = User
         fields = ['id', 'email', 'avatar', 'preferred_genres']
-        extra_kwargs = {
-            'preferred_genres': {'read_only': True}
-        }
 
 
 class InteractionSerializer(serializers.ModelSerializer):

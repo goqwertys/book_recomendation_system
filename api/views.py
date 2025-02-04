@@ -2,7 +2,7 @@ from django.db.models import Avg, Count, Q
 from django.utils import timezone
 from django.views.decorators.cache import cache_page
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import viewsets, generics, permissions, mixins, filters
+from rest_framework import viewsets, generics, permissions, mixins, filters, status
 from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -86,16 +86,19 @@ class UserViewSet(viewsets.GenericViewSet,
             return UserUpdateSerializer
         return super().get_serializer_class()
 
-    @action(detail=False, methods=['GET', 'PUT', 'PATCH'])
+    @action(detail=False, methods=['GET', 'PUT', 'PATCH'], permission_classes=[IsAuthenticated])
     def me(self, request):
+        """ Getting and editing the current user's profile """
         user = request.user
-        if request.method in ['PUT', 'PATCH']:
-            serializer = UserUpdateSerializer(user, data=request.data, partial=True, context={'request': request})
-            serializer.is_valid(raise_exception=True)
-            serializer.save()
-            return Response(serializer.data)
 
-        serializer = self.get_serializer(user)
+        if request.method in ['PUT', 'PATCH']:
+            serializer = UserUpdateSerializer(user, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        serializer = UserSerializer(user)
         return Response(serializer.data)
 
     @action(detail=True, methods=['POST'], permission_classes=[IsAdminUser])

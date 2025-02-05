@@ -6,13 +6,6 @@ from books.models import Genre, Author, Book
 class StyleFormMixin:
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-    # def __init__(self, *args, **kwargs):
-    #     super().__init__(*args, **kwargs)
-    #     for field_name, field in self.fields.items():
-    #         if isinstance(field.widget, forms.CheckboxSelectMultiple):
-    #             field.widget.attrs['class'] = 'form-check-input'
-    #         else:
-    #             field.widget.attrs['class'] = 'form-control'
 
 
 class GenreForm(StyleFormMixin, forms.ModelForm):
@@ -22,6 +15,8 @@ class GenreForm(StyleFormMixin, forms.ModelForm):
 
 
 class AuthorForm(StyleFormMixin, forms.ModelForm):
+    bio = forms.CharField(required=False)
+
     class Meta:
         model = Author
         fields = ['name', 'bio']
@@ -38,6 +33,7 @@ class BookForm(StyleFormMixin, forms.ModelForm):
         widget=forms.CheckboxSelectMultiple,
         label='Genres'
     )
+
     class Meta:
         model = Book
         fields = ['title', 'cover', 'author', 'description', 'genres']

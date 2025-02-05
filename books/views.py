@@ -5,8 +5,8 @@ from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.generic import TemplateView, ListView, DeleteView, CreateView, UpdateView, DetailView
-from matplotlib.pyplot import title
 
+from books.filters import BookFilter
 from books.forms import GenreForm, AuthorForm, BookForm
 from books.models import Genre, Author, Book
 from interactions.forms import RatingForm
@@ -97,6 +97,36 @@ class BookListView(ListView):
     template_name = 'books/book_list.html'
     context_object_name = 'books'
     paginate_by = 10
+    filterset_class = BookFilter
+
+    def get_queryset(self):
+        """ Searching, filtering, and sorting """
+        queryset = super().get_queryset()
+
+        search_query = self.request.GET.get('q', '')
+        if search_query:
+            queryset = queryset.filter(
+                Q(title__icontains=search_query) |
+                Q(author__name__icontains=search_query) |
+                Q(description__icontains=search_query)
+            )
+
+        genre_filter = self.request.GET.get('genres', '')
+        if genre_filter:
+            queryset = queryset.filter(genres__id=genre_filter)
+
+        ordering = self.request.GET.get('sort', '-publish_date')
+        allowed_sort_fields = ['title', '-title', 'publish_date', '-publish_date', 'rating', '-rating']
+        if ordering in allowed_sort_fields:
+            queryset = queryset.order_by(ordering)
+
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        """ Add filters to context """
+        context = super().get_context_data(**kwargs)
+        context['filter'] = BookFilter(self.request.GET, queryset=self.get_queryset())
+        return context
 
 
 @method_decorator(login_required, name='dispatch')
@@ -120,25 +150,6 @@ class BookDetailView(DetailView):
         if form.is_valid():
             form.save()
         return redirect('books:book-detail', pk=book.pk)
-
-    def get_queryset(self):
-        """ Searching and sorting """
-        queryset = super().get_queryset()
-
-        search_query = self.request.get('q', '')
-        if search_query:
-            queryset = queryset.filter(
-                Q(title__icontains=search_query) |
-                Q(author__name__icontains=search_query) |
-                Q(description__icontains=search_query)
-            )
-
-        ordering = self.request.GET.get('sort', '-publication_date')
-        allowed_sort_fields = ['title', '-title', 'publication_date', '-publication_date', 'rating', '-rating']
-        if ordering in allowed_sort_fields:
-            queryset = queryset.order_by(ordering)
-
-        return queryset
 
 
 class BookCreateView(CreateView):

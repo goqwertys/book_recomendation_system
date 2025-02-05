@@ -11,7 +11,8 @@ from books.forms import GenreForm, AuthorForm, BookForm
 from books.models import Genre, Author, Book
 from interactions.forms import RatingForm
 from interactions.models import Interaction
-from recommendations.services import get_statistics
+from recommendations.services import get_statistics, get_collaborative_recommendations_service, \
+    get_knn_recommendations_service, get_pagerank_recommendations_service
 
 
 class HomeView(TemplateView):
@@ -184,5 +185,19 @@ class StatisticsView(TemplateView):
         context['new_books_week_count'] = statistics_data['new_books_week_count']
         context['top_rated_books'] = statistics_data['top_rated_books']
         context['top_active_users'] = statistics_data['top_active_users']
+
+        return context
+
+
+class RecommendationView(LoginRequiredMixin, TemplateView):
+    """ Recommendation view """
+    template_name = 'books/recommendations.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user_id = self.request.user.id
+        context["pagerank_recommendations"] = get_pagerank_recommendations_service(user_id)
+        context['collaborative_recommendations'] = get_collaborative_recommendations_service(user_id)
+        context['knn_recommendations'] = get_knn_recommendations_service(user_id)
 
         return context

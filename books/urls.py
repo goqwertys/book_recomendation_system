@@ -2,7 +2,7 @@ from django.urls import path
 from books.apps import BooksConfig
 from books.views import HomeView, GenreListView, GenreDetailView, GenreCreateView, GenreUpdateView, AuthorListView, \
     AuthorDetailView, AuthorCreateView, AuthorUpdateView, AuthorDeleteView, BookCreateView, BookDetailView, \
-    BookListView, GenreDeleteView, BookUpdateView, BookDeleteView, StatisticsView
+    BookListView, GenreDeleteView, BookUpdateView, BookDeleteView, StatisticsView, RecommendationView
 
 app_name = BooksConfig.name
 
@@ -32,6 +32,7 @@ urlpatterns = [
     path('', HomeView.as_view(), name='home'),
 
     # Recommendations
+    path('recommendations/', RecommendationView.as_view(), name='recommendations'),
 
     # Statistics
     path('statistics/', StatisticsView.as_view(), name='statistics')

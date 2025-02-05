@@ -8,13 +8,6 @@ from interactions.models import Interaction
 
 
 def user_based_collaborative_filtering(user_id, k=5, top_n=10):
-    cache_key = f"user_recommendations_{user_id}_{k}_{top_n}"
-
-    if CACHE_ENABLED:
-        cached_result = cache.get(cache_key)
-        if cached_result:
-            return cached_result
-
     # Receive all interactions
     interactions = Interaction.objects.all()
 
@@ -65,8 +58,5 @@ def user_based_collaborative_filtering(user_id, k=5, top_n=10):
         }
         for book_id in recommended_books_ids
     ]
-
-    if CACHE_ENABLED:
-        cache.set(cache_key, recommendations, timeout=CACHE_TIMEOUT)
 
     return recommendations

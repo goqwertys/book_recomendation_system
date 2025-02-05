@@ -5,6 +5,7 @@ from django.utils import timezone
 from books.models import Book
 from config.settings import CACHE_ENABLED, CACHE_TIMEOUT
 from recommendations.algorithms import pagerank, collaborative, k_nearest_neighbors
+from recommendations.algorithms.collaborative import user_based_collaborative_filtering
 from recommendations.graph_builder import build_user_book_graph
 from users.models import User
 
@@ -23,11 +24,35 @@ def get_pagerank_recommendations_service(user_id, top_n=10):
 
 
 def get_collaborative_recommendations_service(user_id, k=5, top_n=10):
-    return collaborative.user_based_collaborative_filtering(user_id, k, top_n)
+    cache_key = f"user_recommendations_{user_id}_{k}_{top_n}"
+
+    if CACHE_ENABLED:
+        cached_result = cache.get(cache_key)
+        if cached_result:
+            return cached_result
+
+    recommendations = user_based_collaborative_filtering(user_id, k, top_n)
+
+    if CACHE_ENABLED:
+        cache.set(cache_key, recommendations, timeout=CACHE_TIMEOUT)
+
+    return recommendations
 
 
 def get_knn_recommendations_service(user_id, k=5):
-    return k_nearest_neighbors.find_k_nearest_neighbors(user_id, k)
+    cache_key = f'user_recommendation_knn_{user_id}_{k}'
+
+    if CACHE_ENABLED:
+        cached_result = cache.get(cache_key)
+        if cached_result:
+            return cached_result
+
+    k_neighbors = k_nearest_neighbors.find_k_nearest_neighbors(user_id, k)
+
+    if CACHE_ENABLED:
+        cache.set(cache_key, k_neighbors, timeout=CACHE_TIMEOUT)
+
+    return k_neighbors
 
 
 def get_statistics():

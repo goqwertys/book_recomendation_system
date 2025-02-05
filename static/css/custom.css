@@ -138,3 +138,15 @@
     height: 100%;
     object-fit: cover;
 }
+
+.no-cover {
+    background-color: #f0f0f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: #666;
+    font-size: 1.2em;
+    text-align: center;
+    padding: 10px;
+}

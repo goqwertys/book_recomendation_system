@@ -2,7 +2,7 @@ from django.urls import path
 from books.apps import BooksConfig
 from books.views import HomeView, GenreListView, GenreDetailView, GenreCreateView, GenreUpdateView, AuthorListView, \
     AuthorDetailView, AuthorCreateView, AuthorUpdateView, AuthorDeleteView, BookCreateView, BookDetailView, \
-    BookListView, GenreDeleteView, BookUpdateView, BookDeleteView
+    BookListView, GenreDeleteView, BookUpdateView, BookDeleteView, StatisticsView
 
 app_name = BooksConfig.name
 
@@ -34,5 +34,5 @@ urlpatterns = [
     # Recommendations
 
     # Statistics
-
+    path('statistics/', StatisticsView.as_view(), name='statistics')
 ]

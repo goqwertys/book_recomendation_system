@@ -4,6 +4,7 @@ from django.views.generic import TemplateView, ListView, DeleteView, CreateView,
 
 from books.forms import GenreForm, AuthorForm, BookForm
 from books.models import Genre, Author, Book
+from recommendations.services import get_statistics
 
 
 class HomeView(TemplateView):
@@ -115,3 +116,19 @@ class BookDeleteView(DeleteView):
     model = Book
     template_name = 'books/book_confirm_delete.html'
     success_url = reverse_lazy('books:books')
+
+
+class StatisticsView(TemplateView):
+    """ Home view"""
+    template_name = 'books/statistics.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        statistics_data = get_statistics()
+        context['books_count'] = statistics_data['books_count']
+        context['users_count'] = statistics_data['users_count']
+        context['new_books_week_count'] = statistics_data['new_books_week_count']
+        context['top_rated_books'] = statistics_data['top_rated_books']
+        context['top_active_users'] = statistics_data['top_active_users']
+
+        return context

@@ -1,0 +1,50 @@
+{% extends 'books/base.html' %}
+{% block title %}Statistics{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-10 col-lg-7">
+            <div class="card mt-5">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Statistics:</h5>
+                </div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">
+                        Total books: {{ books_count }}
+                    </li>
+                    <li class="list-group-item">
+                        Total users: {{ users_count }}
+                    </li>
+                    <li class="list-group-item">
+                        New books this week: {{ new_books_week_count }}
+                    </li>
+                    <li class="list-group-item">
+                        <h6 class="mb-2">Top Rated Books:</h6>
+                        <ul class="list-unstyled">
+                            {% for book in top_rated_books %}
+                            <li class="mb-1">
+                                <a href="{% url 'books:book-detail' book.pk %}" class="text-decoration-none">
+                                    {{ book.title }} - {{ book.author.name }}
+                                </a>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </li>
+                    <li class="list-group-item">
+                        <h6 class="mb-2">Top Active Users:</h6>
+                        <ul class="list-unstyled">
+                            {% for user in top_active_users %}
+                            <li class="mb-1">
+                                <a href="{% url 'users:profile' user.pk %}" class="text-decoration-none">
+                                    {{ user.email }}
+                                </a>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

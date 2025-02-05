@@ -1,6 +1,3 @@
-from django.db.models import Avg, Count, Q
-from django.utils import timezone
-from django.views.decorators.cache import cache_page
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, generics, permissions, mixins, filters, status
 from rest_framework.decorators import action, api_view, permission_classes
@@ -14,10 +11,9 @@ from api.serializers import GenreSerializer, AuthorSerializer, BookSerializer, I
     UserRegistrationSerializer, UserUpdateSerializer, PageRankRecommendationSerializer, \
     CollaborativeRecommendationSerializer
 from books.models import Author, Genre, Book
-from config.settings import CACHE_ENABLED
 from interactions.models import Interaction
 from recommendations.services import get_pagerank_recommendations_service, get_collaborative_recommendations_service, \
-    get_knn_recommendations_service
+    get_knn_recommendations_service, get_statistics
 from users.models import User
 
 
@@ -205,41 +201,18 @@ def get_knn_recommendations(request, user_id):
 
 
 @api_view(['GET'])
-@cache_page(900 if CACHE_ENABLED else 0)
 @permission_classes([IsAuthenticated])
-def get_statistics(request):
-    # Total number of books
-    books_count = Book.objects.all().count()
+def get_statistics_api(request):
+    statistics_data = get_statistics()
 
-    # Total number of users
-    users_count = User.objects.all().count()
-
-    # Number of new books per week
-    one_week_ago = timezone.now() - timezone.timedelta(days=7)
-    new_books_week_count = Book.objects.filter(publish_date__gte=one_week_ago).count()
-
-    # Top 5 Popular Books with the Highest Average Rating
-    top_rated_books = Book.objects.annotate(
-        avg_rating=Avg('interaction__rating'),
-        rating_count=Count('interaction__rating')
-    ).order_by('-avg_rating', '-rating_count')[:5]
-
-    # Top 5 most active users (most interactions per week)
-    top_active_users = User.objects.annotate(
-        interaction_count=Count(
-            'interaction',
-            filter=Q(interaction__timestamp__gte=one_week_ago)
-        )
-    ).order_by('-interaction_count')[:5]
-
-    # Serializing
-    top_rated_books_data = BookSerializer(top_rated_books, many=True).data
-    top_active_users_data = UserSerializer(top_active_users, many=True).data
+    # Serializing data
+    top_rated_books_data = BookSerializer(statistics_data['top_rated_books'], many=True).data
+    top_active_users_data = UserSerializer(statistics_data['top_active_users'], many=True).data
 
     response = {
-        'books_count': books_count,
-        'users_count': users_count,
-        'new_books_week_count': new_books_week_count,
+        'books_count': statistics_data['books_count'],
+        'users_count': statistics_data['users_count'],
+        'new_books_week_count': statistics_data['new_books_week_count'],
         'top_rated_books': top_rated_books_data,
         'top_active_users': top_active_users_data
     }

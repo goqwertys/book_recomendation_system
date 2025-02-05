@@ -1,0 +1,31 @@
+<div class="card mb-3">
+    <div class="row g-0">
+        <div class="col-md-4">
+            {% if book.cover %}
+            <img src="{{ book.cover }}" class="img-fluid rounded-start" alt="Book Cover">
+            {% else %}
+            <div class="no-cover">
+                {{ book.title }}
+            </div>
+            {% endif %}
+        </div>
+        <div class="col-md-8">
+            <div class="card-body">
+                <h5 class="card-title">{{ book.title }}</h5>
+                <h6 class="card-subtitle text-muted">by {{ book.author.name }}</h6>
+                <p class="card-text">{{ book.description|truncatewords:20 }}</p>
+                {% if score %}
+                <p><strong>Score:</strong> {{ score|floatformat:5 }}</p>
+                {% endif %}
+                {% if predicted_rate %}
+                <p><strong>Predicted rate:</strong> {{ predicted_rate|floatformat:2 }}</p>
+                {% endif %}
+                {% if book.id %}
+                <a href="{% url 'books:book-detail' book.id %}" class="btn btn-primary">View</a>
+                {% else %}
+                <p class="text-muted">Book details unavailable</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>

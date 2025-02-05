@@ -1,0 +1,64 @@
+{% extends 'books/base.html' %}
+{% block title %}Recommendations{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Recommendations</h2>
+
+    <div class="accordion" id="recommendationAccordion">
+        <!-- PageRank -->
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingPagerank">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePagerank">
+                    PageRank Recommendations
+                </button>
+            </h2>
+            <div id="collapsePagerank" class="accordion-collapse collapse show" data-bs-parent="#recommendationAccordion">
+                <div class="accordion-body">
+                    {% for recommendation in pagerank_recommendations %}
+                        {% include 'books/includes/book_card.html' with book=recommendation.book score=recommendation.score %}
+                    {% empty %}
+                        <p>No recommendations available.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Collaborative Filtering -->
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingCollaborative">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCollaborative">
+                    Collaborative Filtering Recommendations
+                </button>
+            </h2>
+            <div id="collapseCollaborative" class="accordion-collapse collapse" data-bs-parent="#recommendationAccordion">
+                <div class="accordion-body">
+                    {% for recommendation in collaborative_recommendations %}
+                        {% include 'books/includes/book_card.html' with book=recommendation.book predicted_rate=recommendation.predicted_rating %}
+                    {% empty %}
+                        <p>No recommendations available.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- K-NN Nearest Neighbors -->
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingKNN">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseKNN">
+                    Nearest Neighbors (K-NN)
+                </button>
+            </h2>
+            <div id="collapseKNN" class="accordion-collapse collapse" data-bs-parent="#recommendationAccordion">
+                <div class="accordion-body">
+                    {% for user in knn_recommendations %}
+                        {% include 'books/includes/user_card.html' with user=user %}
+                    {% empty %}
+                        <p>No similar users found.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

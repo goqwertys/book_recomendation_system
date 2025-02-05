@@ -11,8 +11,35 @@ from users.models import User
 
 class Command(BaseCommand):
     help = 'Generates test data for recommendation algorithms'
+    base_genres = [
+
+    ]
+
+    def add_arguments(self, parser):
+        parser.add_argument(
+            '--num_books',
+            type=int,
+            default=100,
+            help='Number of books to create (default: 100)',
+        )
+        parser.add_argument(
+            '--num_users',
+            type=int,
+            default=50,
+            help='Number of users to create (default: 50)',
+        )
+        parser.add_argument(
+            '--num_authors',
+            type=int,
+            default=20,
+            help='Number of users to create (default: 50)',
+        )
 
     def handle(self, *args, **options):
+        num_books = options['num_books']
+        num_users = options['num_users']
+        num_authors = options['num_authors']
+
         self.stdout.write('Deleting old data...')
         Genre.objects.all().delete()
         Author.objects.all().delete()
@@ -32,15 +59,15 @@ class Command(BaseCommand):
         genres = Genre.objects.all()
 
         # authors creation
-        self.stdout.write('Creating authors...')
-        authors = [Author(name=f'Author {i}') for i in range(1, 21)]
+        self.stdout.write(f'Creating {num_authors} authors...')
+        authors = [Author(name=f'Author {i}', bio=f'Author {i} Bio') for i in range(1, num_authors + 1)]
         Author.objects.bulk_create(authors)
         authors = Author.objects.all()
 
         # books creation
-        self.stdout.write('Creating books...')
+        self.stdout.write(f'Creating {num_books} books...')
         books = []
-        for i in range(1, 101):
+        for i in range(1, num_books + 1):
             book = Book(
                 title=f'Book {i}',
                 author=random.choice(authors),
@@ -58,7 +85,7 @@ class Command(BaseCommand):
 
         # Creating Users
         self.stdout.write('Creating Users...')
-        for i in range(1, 51):
+        for i in range(1, num_users + 1):
             user = User.objects.create_user(
                 email=f'user{i}@example.com',
                 password='testpass123'

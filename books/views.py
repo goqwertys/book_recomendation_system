@@ -1,9 +1,11 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import Q
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.generic import TemplateView, ListView, DeleteView, CreateView, UpdateView, DetailView
+from matplotlib.pyplot import title
 
 from books.forms import GenreForm, AuthorForm, BookForm
 from books.models import Genre, Author, Book
@@ -118,6 +120,25 @@ class BookDetailView(DetailView):
         if form.is_valid():
             form.save()
         return redirect('books:book-detail', pk=book.pk)
+
+    def get_queryset(self):
+        """ Searching and sorting """
+        queryset = super().get_queryset()
+
+        search_query = self.request.get('q', '')
+        if search_query:
+            queryset = queryset.filter(
+                Q(title__icontains=search_query) |
+                Q(author__name__icontains=search_query) |
+                Q(description__icontains=search_query)
+            )
+
+        ordering = self.request.GET.get('sort', '-publication_date')
+        allowed_sort_fields = ['title', '-title', 'publication_date', '-publication_date', 'rating', '-rating']
+        if ordering in allowed_sort_fields:
+            queryset = queryset.order_by(ordering)
+
+        return queryset
 
 
 class BookCreateView(CreateView):

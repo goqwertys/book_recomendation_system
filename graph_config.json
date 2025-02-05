@@ -1,0 +1,61 @@
+{
+  "layout": {
+    "hierarchical": {
+      "enabled": true,
+      "levelSeparation": 500,
+      "direction": "LR",
+      "sortMethod": "directed"
+    }
+  },
+  "nodes": {
+    "font": {
+      "size": 14,
+      "color": "black"
+    },
+    "scaling": {
+      "min": 20,
+      "max": 30
+    },
+    "shape": {
+      "user": "circle",
+      "book": "box"
+    },
+    "default_colors": {
+      "user": "white",
+      "book": "gray"
+    },
+    "highlight_colors": {
+      "user_selected": "red",
+      "user_knn": "blue",
+      "book_cf": "green",
+      "book_pagerank": "orange"
+    },
+    "border": {
+      "user": "black",
+      "book": "black"
+    }
+  },
+  "edges": {
+    "color": {
+      "default": "gray",
+      "book_related": "green",
+      "user_knn": "blue",
+      "pagerank": "orange"
+    },
+    "smooth": false,
+    "width": 1.0
+  },
+  "physics": {
+    "enabled": true,
+    "hierarchicalRepulsion": {
+      "nodeDistance": 200,
+      "centralGravity": 0.3
+    },
+    "minVelocity": 0.75,
+    "solver": "hierarchicalRepulsion",
+    "stabilization": {
+      "enabled": true,
+      "iterations": 1000
+    }
+  }
+}

@@ -1,5 +1,6 @@
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.core.exceptions import PermissionDenied
 from django.db.models import Q
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
@@ -15,6 +16,15 @@ from recommendations.services import get_statistics, get_collaborative_recommend
     get_knn_recommendations_service, get_pagerank_recommendations_service
 
 
+class StaffRequiredMixin(UserPassesTestMixin):
+    """Mixin to check if a user is a moderator (is_staff)."""
+    def test_func(self):
+        return self.request.user.is_staff
+
+    def handle_no_permission(self):
+        raise PermissionDenied("You do not have permission to perform this action.")
+
+
 class HomeView(TemplateView):
     """ Home view"""
     template_name = 'books/home.html'
@@ -25,75 +35,75 @@ class HomeView(TemplateView):
 
 
 # Genre CRUD
-class GenreListView(ListView, LoginRequiredMixin):
+class GenreListView(StaffRequiredMixin, ListView):
     model = Genre
     template_mame = 'books/genre_list.html'
     context_object_name = 'genres'
     paginate_by = 10
 
 
-class GenreDetailView(DetailView, LoginRequiredMixin):
+class GenreDetailView(StaffRequiredMixin, DetailView):
     model = Genre
     template_name = 'books/genre_detail.html'
     context_object_name = 'genre'
 
 
-class GenreCreateView(CreateView):
+class GenreCreateView(StaffRequiredMixin, CreateView):
     model = Genre
     form_class = GenreForm
     template_name = 'books/genre_form.html'
     success_url = reverse_lazy('books:genres')
 
 
-class GenreUpdateView(UpdateView):
+class GenreUpdateView(StaffRequiredMixin, UpdateView):
     model = Genre
     form_class = GenreForm
     template_name = 'books/genre_form.html'
     success_url = reverse_lazy('books:genres')
 
 
-class GenreDeleteView(DeleteView):
+class GenreDeleteView(StaffRequiredMixin, DeleteView):
     model = Genre
     template_name = 'books/genre_confirm_delete.html'
     success_url = reverse_lazy('books:genres')
 
 
 # Author CRUD
-class AuthorListView(ListView):
+class AuthorListView(StaffRequiredMixin, ListView):
     model = Author
     template_name = 'books/author_list.html'
     context_object_name = 'authors'
     paginate_by = 10
 
 
-class AuthorDetailView(DetailView):
+class AuthorDetailView(StaffRequiredMixin, DetailView):
     model = Author
     template_name = 'books/author_detail.html'
     context_object_name = 'author'
 
 
-class AuthorCreateView(CreateView):
+class AuthorCreateView(StaffRequiredMixin, CreateView):
     model = Author
     form_class = AuthorForm
     template_name = 'books/author_form.html'
     success_url = reverse_lazy('books:authors')
 
 
-class AuthorUpdateView(UpdateView):
+class AuthorUpdateView(StaffRequiredMixin, UpdateView):
     model = Author
     form_class = AuthorForm
     template_name = 'books/author_form.html'
     success_url = reverse_lazy('books:authors')
 
 
-class AuthorDeleteView(DeleteView):
+class AuthorDeleteView(StaffRequiredMixin, DeleteView):
     model = Author
     template_name = 'books/author_confirm_delete.html'
     success_url = reverse_lazy('books:authors')
 
 
 # Book CRUD
-class BookListView(ListView):
+class BookListView(LoginRequiredMixin, ListView):
     model = Book
     template_name = 'books/book_list.html'
     context_object_name = 'books'
@@ -153,21 +163,21 @@ class BookDetailView(DetailView):
         return redirect('books:book-detail', pk=book.pk)
 
 
-class BookCreateView(CreateView):
+class BookCreateView(StaffRequiredMixin, CreateView):
     model = Book
     form_class = BookForm
     template_name = 'books/book_form.html'
     success_url = reverse_lazy('books:books')
 
 
-class BookUpdateView(UpdateView):
+class BookUpdateView(StaffRequiredMixin, UpdateView):
     model = Book
     form_class = BookForm
     template_name = 'books/book_form.html'
     success_url = reverse_lazy('books:books')
 
 
-class BookDeleteView(DeleteView):
+class BookDeleteView(StaffRequiredMixin, DeleteView):
     model = Book
     template_name = 'books/book_confirm_delete.html'
     success_url = reverse_lazy('books:books')

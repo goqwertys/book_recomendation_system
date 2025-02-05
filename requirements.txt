@@ -14,3 +14,4 @@ scipy==1.15.1
 scikit-learn==1.6.1
 redis==5.2.1
 django-filter==24.3
+drf-yasg==1.21.8

@@ -1,11 +1,20 @@
 import numpy as np
+from django.core.cache import cache
 from sklearn.metrics.pairwise import cosine_similarity
 
+from config.settings import CACHE_ENABLED, CACHE_TIMEOUT
 from interactions.models import Interaction
 from users.models import User
 
 
 def find_k_nearest_neighbors(user_id, k=5):
+    cache_key = f"user_neighbors_{user_id}_{k}"
+
+    if CACHE_ENABLED:
+        cached_result = cache.get(cache_key)
+        if cached_result:
+            return cached_result
+
     # Get all interactions
     interactions = Interaction.objects.all()
 
@@ -32,4 +41,7 @@ def find_k_nearest_neighbors(user_id, k=5):
     target_user_idx = user_to_index[user_id]
     nearest_neighbors = np.argsort(user_similarity[target_user_idx])[-k - 1:-1][::-1]
 
-    return User.objects.filter(id__in=[users[idx] for idx in nearest_neighbors])
+    result = User.objects.filter(id__in=[users[idx] for idx in nearest_neighbors])
+
+    if CACHE_ENABLED:
+        cache.set(cache_key, result, timeout=CACHE_TIMEOUT)

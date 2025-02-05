@@ -1,12 +1,22 @@
 import networkx as nx
+from django.core.cache import cache
 
 from books.models import Book
+from config.settings import CACHE_ENABLED, CACHE_TIMEOUT
 from interactions.models import Interaction
 
 
 def get_pagerank_recommendations(user_id, G, top_n=10):
     """ Returns top_n for books for user_id's user via PageRank algorithm from a given graph """
-    pr = nx.pagerank(G, weight='weight')
+    cache_key = 'pr_scores'
+
+    if CACHE_ENABLED:
+        pr = cache.get(cache_key )
+        if pr is None:
+            pr = nx.pagerank(G, weight='weight')
+            cache.set(cache_key, pr, timeout=CACHE_TIMEOUT)
+    else:
+        pr = nx.pagerank(G, weight='weight')
 
     # Filter books that the user has not yet interacted with
     user_books = set(Interaction.objects.filter(user_id=user_id).values_list('book_id', flat=True))

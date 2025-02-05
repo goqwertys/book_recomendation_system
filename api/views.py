@@ -162,7 +162,7 @@ def get_pagerank_recommendations(request, user_id=None):
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def get_collaborative_recommendations(request, user_id):
+def get_collaborative_recommendations(request, user_id=None):
     if user_id is None:
         user = request.user
     else:
@@ -182,7 +182,7 @@ def get_collaborative_recommendations(request, user_id):
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def get_knn_recommendations(request, user_id):
+def get_knn_recommendations(request, user_id=None):
     if user_id is None:
         user = request.user
     else:

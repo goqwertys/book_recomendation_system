@@ -45,3 +45,5 @@ def find_k_nearest_neighbors(user_id, k=5):
 
     if CACHE_ENABLED:
         cache.set(cache_key, result, timeout=CACHE_TIMEOUT)
+
+    return result

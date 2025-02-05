@@ -1,9 +1,14 @@
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import redirect
 from django.urls import reverse_lazy
-from django.views.generic import TemplateView, ListView, DeleteView, CreateView, UpdateView
+from django.utils.decorators import method_decorator
+from django.views.generic import TemplateView, ListView, DeleteView, CreateView, UpdateView, DetailView
 
 from books.forms import GenreForm, AuthorForm, BookForm
 from books.models import Genre, Author, Book
+from interactions.forms import RatingForm
+from interactions.models import Interaction
 from recommendations.services import get_statistics
 
 
@@ -24,7 +29,7 @@ class GenreListView(ListView, LoginRequiredMixin):
     paginate_by = 10
 
 
-class GenreDetailView(DeleteView, LoginRequiredMixin):
+class GenreDetailView(DetailView, LoginRequiredMixin):
     model = Genre
     template_name = 'books/genre_detail.html'
     context_object_name = 'genre'
@@ -58,7 +63,7 @@ class AuthorListView(ListView):
     paginate_by = 10
 
 
-class AuthorDetailView(DeleteView):
+class AuthorDetailView(DetailView):
     model = Author
     template_name = 'books/author_detail.html'
     context_object_name = 'author'
@@ -92,10 +97,27 @@ class BookListView(ListView):
     paginate_by = 10
 
 
-class BookDetailView(DeleteView):
+@method_decorator(login_required, name='dispatch')
+class BookDetailView(DetailView):
     model = Book
     template_name = 'books/book_detail.html'
     context_object_name = 'book'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        book = self.get_object()
+        interaction = Interaction.objects.filter(user=self.request.user, book=book).first()
+        context['rating_form'] = RatingForm(instance=interaction)
+        context['user_rating'] = interaction.rating if interaction else None
+        return context
+
+    def post(self, request, *args, **kwargs):
+        book = self.get_object()
+        interaction, created = Interaction.objects.get_or_create(user=request.user, book=book)
+        form = RatingForm(request.POST, instance=interaction)
+        if form.is_valid():
+            form.save()
+        return redirect('books:book-detail', pk=book.pk)
 
 
 class BookCreateView(CreateView):

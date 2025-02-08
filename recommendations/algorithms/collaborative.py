@@ -1,9 +1,7 @@
 import numpy as np
-from django.core.cache import cache
 from sklearn.metrics.pairwise import cosine_similarity
 
 from books.models import Book
-from config.settings import CACHE_ENABLED, CACHE_TIMEOUT
 from interactions.models import Interaction
 
 
@@ -15,12 +13,18 @@ def user_based_collaborative_filtering(user_id, k=5, top_n=10):
     users = list(set(interactions.values_list('user_id', flat=True)))
     books = list(set(interactions.values_list('book_id', flat=True)))
 
+    if not users or books:
+        return []
+
     # Create an empty matrix
     user_book_matrix = np.zeros((len(users), len(books)))
 
     # Filling in the matrix
     user_to_index = {user_id: i for i, user_id in enumerate(users)}
     book_to_index = {book_id: i for i, book_id in enumerate(books)}
+
+    if user_id not in user_to_index:
+        return []
 
     for interaction in interactions:
         user_idx = user_to_index[interaction.user_id]
@@ -50,6 +54,9 @@ def user_based_collaborative_filtering(user_id, k=5, top_n=10):
     recommended_books_ids = [books[idx] for idx in recommended_books_indices]
     books_queryset = Book.objects.filter(id__in=recommended_books_ids).select_related('author')
     books_dict = {book.id: book for book in books_queryset}
+
+    if not books_dict:
+        return []
 
     recommendations = [
         {

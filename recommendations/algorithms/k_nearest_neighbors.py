@@ -22,12 +22,18 @@ def find_k_nearest_neighbors(user_id, k=5):
     users = list(set(interactions.values_list('user_id', flat=True)))
     books = list(set(interactions.values_list('book_id', flat=True)))
 
-    # Create an empty matrix
-    user_book_matrix = np.zeros((len(users), len(books)))
+    if not users or not books:
+        return []
 
     # Filling the matrix
     user_to_index = {user_id: i for i, user_id in enumerate(users)}
     book_to_index = {book_id: i for i, book_id in enumerate(books)}
+
+    if user_id not in user_to_index:
+        return []
+
+    # Create an empty matrix
+    user_book_matrix = np.zeros((len(users), len(books)))
 
     for interaction in interactions:
         user_idx = user_to_index[interaction.user_id]
@@ -40,6 +46,9 @@ def find_k_nearest_neighbors(user_id, k=5):
     # Find k nearest neighbors
     target_user_idx = user_to_index[user_id]
     nearest_neighbors = np.argsort(user_similarity[target_user_idx])[-k - 1:-1][::-1]
+
+    if not nearest_neighbors.size:
+        return []
 
     result = User.objects.filter(id__in=[users[idx] for idx in nearest_neighbors])
 

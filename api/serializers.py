@@ -20,6 +20,9 @@ class AuthorSerializer(serializers.ModelSerializer):
 
 class BookSerializer(serializers.ModelSerializer):
     """ Book serializer """
+    author = AuthorSerializer()
+    genres = GenreSerializer(many=True)
+
     class Meta:
         model = Book
         fields = '__all__'

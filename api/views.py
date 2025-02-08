@@ -46,7 +46,7 @@ class BookViewSet(viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter, filters.SearchFilter]
     filterset_class = BookFilter
     ordering_fields = ['average_rating', 'publish_date']
-    search_fields = ['name']
+    search_fields = ['title']
     permission_classes = [IsStaffOrReadOnly]
 
 
